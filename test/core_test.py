@@ -33,3 +33,14 @@ def test_elect_DFS(benchmark):
 def test_BFS(benchmark):
     result = benchmark(core.elect, ballots, [1, 2, 3, 4, 5], dfs=False)
     assert result == [4]
+
+
+def test_margins(benchmark):
+    result = benchmark(core.margins_from_ballots, ballots)
+    assert result.tolist() == [
+        [0, -8, 6, 4, 0],
+        [8, 0, -8, 4, 0],
+        [-6, 8, 0, -6, 0],
+        [-4, -4, 6, 0, 2],
+        [0, 0, 0, -2, 0],
+    ]
