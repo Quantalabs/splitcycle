@@ -251,7 +251,7 @@ def margins_from_ballots(ballots):
     margins = np.zeros((n_candidates, n_candidates))
 
     comp = np.expand_dims(ballots, axis=1) - np.expand_dims(ballots, axis=2)
-    margins = np.sum(np.where(comp < 0, 1, np.where(comp > 0, -1, 0)))
+    margins = np.sum(np.where(comp < 0, 1, np.where(comp > 0, -1, 0)), axis=0)
 
     return margins
 
