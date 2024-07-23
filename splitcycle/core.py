@@ -261,21 +261,10 @@ def margins_from_ballots(ballots):
     margins = np.zeros((n_candidates, n_candidates))
 
     for ballot in ballots:
-        # update all margins for this ballot
-        for i in range(n_candidates):
-            for j in range(n_candidates):
-                if i == j:
-                    # margins already has zero diagonal
-                    continue
+        comp = np.subtract.outer(ballot, ballot)
 
-                # handle ranking possibilities except ties (do nothing)
-                if ballot[i] < ballot[j]:
-                    # i beats j
-                    margins[i, j] += 1
-                elif ballot[i] > ballot[j]:
-                    # i loses to j
-                    margins[i, j] -= 1
-
+        margins += np.where(comp < 0, 1, np.where(comp > 0, -1, 0))
+    
     return margins
 
 
