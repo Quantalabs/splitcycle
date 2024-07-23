@@ -22,21 +22,18 @@ def ic(n_ballots, n_candidates, ties):
     represents a preprocessed list of ballots with ranks 1 to
     `n_candidates` (can be used with `elect`)
     """
-    # generate random ballots
-    ballots = np.zeros((n_ballots, n_candidates))
-    for i in range(n_ballots):
-        if ties:
-            ballots[i] = np.array(
-                [randint(1, n_candidates) for _ in range(n_candidates)]
-            )
-        else:
-            # generate `n_candidates` unique random integers
-            # from 1 to `n_candidates`
-            ballots[i] = 1 + np.random.choice(
-                n_candidates, n_candidates, replace=False
-            )
-
-    return ballots
+    if ties:
+        # Generate random ballots with ties
+        return np.random.randint(
+            1, n_candidates, size=(n_ballots, n_candidates)
+        )
+    else:
+        # Generate unique random ballots without ties
+        ballots = np.zeros((n_ballots, n_candidates), dtype=int)
+        for i in range(n_ballots):
+            permutation = np.random.permutation(n_candidates) + 1  # Ensure 1 to n_candidates
+            ballots[i] = permutation
+        return ballots
 
 
 def euclidean(n_ballots, n_candidates, n):
