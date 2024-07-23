@@ -4,6 +4,7 @@ import os
 from multiprocessing import Pool
 import numpy as np
 from .errors import not_enough_candidates
+from collections import deque
 
 
 def is_square(matrix):
@@ -55,53 +56,42 @@ def is_splitcycle_winner(work):
         otherwise.
         """
         n = matrix.shape[0]  # `A` is square
-        # keep track of visited nodes (initially all `False`)
+        if source == target:
+            return True
+
         s_visited = np.zeros(n, dtype=bool)
-        s_visited[source] = True  # do not revisit the `source` node
         t_visited = np.zeros(n, dtype=bool)
+        s_visited[source] = True
         t_visited[target] = True
 
-        def bidir_bfs(sq, tq):
-            """
-            Bidirectional breadth-first search implementation:
-            Runs a BFS from the target and BFS from the source,
-            stopping when either of their paths meet. Since
-            Condorcet cycles are exceedingly rare in real elections and
-            typically do not involve many candidates[1], a breadth-first
-            search of the margins graph will be fastest to detect such a
-            cycle. Bidirectionality means we will need to visit less nodes
-            to find a path.
+        sq = deque([source])
+        tq = deque([target])
 
-            [1] (Gehrlein and Lepelley, "Voting Paradoxes and Group
-                Coherence")
-            """
-            nsq = []
-            ntq = []
+        cs = None
+        ct = None
 
-            while sq and tq:
-                cs = sq.pop(0)
-                for node in sq:
-                    if matrix[node, target] >= k:
-                        return True
+        while sq and tq:
+            if sq:
+                cs = sq.popleft()
+                for neighbor, weight in enumerate(matrix[cs]):
+                    if weight >= k:
+                        if t_visited[neighbor]:
+                            return True
+                        if not s_visited[neighbor]:
+                            s_visited[neighbor] = True
+                            sq.append(neighbor)
 
-                    s_visited[node] = True
-                    for neighbor, weight in enumerate(matrix[node, :]):
-                        if weight >= k and not s_visited[neighbor]:
-                            nsq.append(neighbor)
+            if tq:
+                ct = tq.popleft()
+                for neighbor in range(n):
+                    if matrix[neighbor, ct] >= k:
+                        if s_visited[neighbor]:
+                            return True
+                        if not t_visited[neighbor]:
+                            t_visited[neighbor] = True
+                            tq.append(neighbor)
 
-                ce = tq.pop(0)
-                for node in tq:
-                    if matrix[node, source] >= k:
-                        return True
-
-                    t_visited[node] = True
-                    for neighbor, weight in enumerate(matrix[node, :]):
-                        if weight >= k and not t_visited[neighbor]:
-                            ntq.append(neighbor)
-
-            return bidir_bfs(nsq, ntq) if nsq or ntq else False
-
-        return bidir_bfs([source], [target])
+        return False
 
     def has_strong_path_dfs(matrix, source, target, k):
         """
@@ -264,7 +254,7 @@ def margins_from_ballots(ballots):
         comp = np.subtract.outer(ballot, ballot)
 
         margins += np.where(comp < 0, 1, np.where(comp > 0, -1, 0))
-    
+
     return margins
 
 
