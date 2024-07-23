@@ -31,7 +31,9 @@ def ic(n_ballots, n_candidates, ties):
         # Generate unique random ballots without ties
         ballots = np.zeros((n_ballots, n_candidates), dtype=int)
         for i in range(n_ballots):
-            permutation = np.random.permutation(n_candidates) + 1  # Ensure 1 to n_candidates
+            permutation = (
+                np.random.permutation(n_candidates) + 1
+            )  # Ensure 1 to n_candidates
             ballots[i] = permutation
         return ballots
 
@@ -60,10 +62,8 @@ def euclidean(n_ballots, n_candidates, n):
     # generate random voter points
     voters = np.random.uniform(-1, 1, (n_ballots, n))
 
-    # compute voter preferences
-    ballots = np.zeros((n_ballots, n_candidates))
-    for i in range(n_ballots):
-        distances = np.linalg.norm(candidates - voters[i], axis=1)
-        ballots[i] = 1 + np.argsort(distances)
+    distances = np.linalg.norm(
+        candidates[np.newaxis, :, :] - voters[:, np.newaxis, :], axis=2
+    )
 
-    return ballots
+    return np.argsort(distances, axis=1) + 1
