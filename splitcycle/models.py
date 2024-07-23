@@ -1,27 +1,27 @@
-'''Voting model representations used in user-facing utilities'''
+"""Voting model representations used in user-facing utilities"""
 
 from random import randint
 import numpy as np
 
 
 def ic(n_ballots, n_candidates, ties):
-    '''
+    """
     Generate a random set of ballots according to the impartial culture
     model, with a parameter to specify whether there should be ties.
 
     `n_ballots`:
         the number of ballots in the election
-    
+
     `n_candidates`:
         the number of candidates in the election
-    
+
     `ties`:
         whether to allow ties in the election
 
     Return a numpy array of shape (n_ballots, n_candidates) that
     represents a preprocessed list of ballots with ranks 1 to
     `n_candidates` (can be used with `elect`)
-    '''
+    """
     # generate random ballots
     ballots = np.zeros((n_ballots, n_candidates))
     for i in range(n_ballots):
@@ -40,23 +40,23 @@ def ic(n_ballots, n_candidates, ties):
 
 
 def euclidean(n_ballots, n_candidates, n):
-    '''
+    """
     Generate a random set of ballots according to the euclidean
     (spatial) model in `n` dimensions.
 
     `n_ballots`:
         the number of ballots in the election
-    
+
     `n_candidates`:
         the number of candidates in the election
-    
+
     `n`:
         dimensionality of the voter preferences space
 
     Return a numpy array of shape (n_ballots, n_candidates) that
     represents a preprocessed list of ballots with ranks 1 to
     `n_candidates` (can be used with `elect`)
-    '''
+    """
     # generate random candidate points
     candidates = np.random.uniform(-1, 1, (n_candidates, n))
 
