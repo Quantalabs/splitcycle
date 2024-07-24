@@ -1,5 +1,6 @@
 import numpy as np
 from splitcycle import core
+from splitcycle import utils
 
 pytest_plugins = ("benchmark",)
 
@@ -24,6 +25,8 @@ ballots = gen_ballots(
     [4, 3, 7, 7, 2, 1],
 )
 
+large_election = utils.gen_random_ballots(1000000, 10, model="ic-ties")
+
 
 def test_elect_DFS(benchmark):
     result = benchmark(core.elect, ballots, [1, 2, 3, 4, 5])
@@ -44,3 +47,11 @@ def test_margins(benchmark):
         [-4, -4, 6, 0, 2],
         [0, 0, 0, -2, 0],
     ]
+
+
+def test_DFS_speed(benchmark):
+    benchmark(core.elect, large_election, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+
+def test_BFS_speed(benchmark):
+    benchmark(core.elect, large_election, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], dfs=False)

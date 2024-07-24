@@ -25,7 +25,7 @@ def ic(n_ballots, n_candidates, ties):
     if ties:
         # Generate random ballots with ties
         return np.random.randint(
-            1, n_candidates, size=(n_ballots, n_candidates)
+            1, high=n_candidates+1, size=(n_ballots, n_candidates)
         )
     else:
         # Generate unique random ballots without ties
